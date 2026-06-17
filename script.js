@@ -5,3 +5,12 @@ function show(i){current=(i+items.length)%items.length;const el=items[current];l
 items.forEach((el,i)=>el.addEventListener('click',()=>show(i)));function closeLb(){lightbox.classList.remove('open');lightbox.setAttribute('aria-hidden','true');document.body.style.overflow='';}
 lightbox.querySelector('.lightbox-close').addEventListener('click',closeLb);lightbox.querySelector('.lightbox-prev').addEventListener('click',(e)=>{e.stopPropagation();show(current-1)});lightbox.querySelector('.lightbox-next').addEventListener('click',(e)=>{e.stopPropagation();show(current+1)});lightbox.addEventListener('click',e=>{if(e.target===lightbox)closeLb();});document.addEventListener('keydown',e=>{if(!lightbox.classList.contains('open'))return;if(e.key==='Escape')closeLb();if(e.key==='ArrowLeft')show(current-1);if(e.key==='ArrowRight')show(current+1);});
 let sx=0;lightbox.addEventListener('touchstart',e=>sx=e.changedTouches[0].clientX,{passive:true});lightbox.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>55)show(current+(dx<0?1:-1));},{passive:true});
+// V7.1: show only selected highlights first, reveal full group on demand
+const showMoreButtons=[...document.querySelectorAll('.show-more-btn')];
+showMoreButtons.forEach(btn=>btn.addEventListener('click',()=>{
+  const group=btn.closest('.gallery-group');
+  const expanded=group.classList.toggle('expanded');
+  if(!btn.dataset.originalText) btn.dataset.originalText=btn.textContent;
+  btn.textContent=expanded?'Thu gọn hình ảnh':btn.dataset.originalText;
+  if(!expanded) group.scrollIntoView({behavior:'smooth',block:'start'});
+}));
