@@ -161,3 +161,27 @@
 .proof-gallery-wrap .gallery-item{
   transition:opacity .35s ease, transform .35s ease;
 }
+.proof-gallery-wrap .compact-gallery.auto-carousel{
+  display:flex;
+  overflow-x:auto;
+  scroll-snap-type:x mandatory;
+  scroll-behavior:smooth;
+  gap:18px;
+  padding-bottom:10px;
+  scrollbar-width:none;
+}
+
+.proof-gallery-wrap .compact-gallery.auto-carousel::-webkit-scrollbar{
+  display:none;
+}
+
+.proof-gallery-wrap .compact-gallery.auto-carousel .gallery-item{
+  flex:0 0 calc(50% - 9px);
+  scroll-snap-align:start;
+}
+
+@media(max-width:768px){
+  .proof-gallery-wrap .compact-gallery.auto-carousel .gallery-item{
+    flex:0 0 82%;
+  }
+}
