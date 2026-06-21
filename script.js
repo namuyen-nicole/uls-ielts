@@ -14,25 +14,32 @@ showMoreButtons.forEach(btn=>btn.addEventListener('click',()=>{
   btn.textContent=expanded?'Thu gọn hình ảnh':btn.dataset.originalText;
   if(!expanded) group.scrollIntoView({behavior:'smooth',block:'start'});
 }));
-// Auto slide gallery: rotate visible images inside each gallery group
+// Smooth auto-scroll carousel for each proof gallery
 document.querySelectorAll('.proof-gallery-wrap .compact-gallery').forEach(gallery => {
   const items = [...gallery.querySelectorAll('.gallery-item')];
-  if (items.length <= 4) return;
+  if (items.length <= 2) return;
 
-  let start = 0;
+  let index = 0;
 
-  function showSlideSet() {
-    items.forEach((item, index) => {
-      const visible = index >= start && index < start + 4;
-      item.style.display = visible ? '' : 'none';
+  gallery.classList.add('auto-carousel');
+
+  function getStep(){
+    const firstItem = items[0];
+    const gap = parseFloat(getComputedStyle(gallery).gap) || 18;
+    return firstItem.offsetWidth + gap;
+  }
+
+  function goNext(){
+    index++;
+    if(index > items.length - 2){
+      index = 0;
+    }
+
+    gallery.scrollTo({
+      left: index * getStep(),
+      behavior: 'smooth'
     });
   }
 
-  showSlideSet();
-
-  setInterval(() => {
-    start += 4;
-    if (start >= items.length) start = 0;
-    showSlideSet();
-  }, 4000);
+  setInterval(goNext, 5000);
 });
