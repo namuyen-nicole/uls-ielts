@@ -5,41 +5,86 @@ function show(i){current=(i+items.length)%items.length;const el=items[current];l
 items.forEach((el,i)=>el.addEventListener('click',()=>show(i)));function closeLb(){lightbox.classList.remove('open');lightbox.setAttribute('aria-hidden','true');document.body.style.overflow='';}
 lightbox.querySelector('.lightbox-close').addEventListener('click',closeLb);lightbox.querySelector('.lightbox-prev').addEventListener('click',(e)=>{e.stopPropagation();show(current-1)});lightbox.querySelector('.lightbox-next').addEventListener('click',(e)=>{e.stopPropagation();show(current+1)});lightbox.addEventListener('click',e=>{if(e.target===lightbox)closeLb();});document.addEventListener('keydown',e=>{if(!lightbox.classList.contains('open'))return;if(e.key==='Escape')closeLb();if(e.key==='ArrowLeft')show(current-1);if(e.key==='ArrowRight')show(current+1);});
 let sx=0;lightbox.addEventListener('touchstart',e=>sx=e.changedTouches[0].clientX,{passive:true});lightbox.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>55)show(current+(dx<0?1:-1));},{passive:true});
-// V7.1: show only selected highlights first, reveal full group on demand
-const showMoreButtons=[...document.querySelectorAll('.show-more-btn')];
-showMoreButtons.forEach(btn=>btn.addEventListener('click',()=>{
-  const group=btn.closest('.gallery-group');
-  const expanded=group.classList.toggle('expanded');
-  if(!btn.dataset.originalText) btn.dataset.originalText=btn.textContent;
-  btn.textContent=expanded?'Thu gọn hình ảnh':btn.dataset.originalText;
-  if(!expanded) group.scrollIntoView({behavior:'smooth',block:'start'});
-}));
-// Smooth auto-scroll carousel for each proof gallery
-document.querySelectorAll('.proof-gallery-wrap .compact-gallery').forEach(gallery => {
-  const items = [...gallery.querySelectorAll('.gallery-item')];
-  if (items.length <= 2) return;
+document.querySelectorAll('[data-slider]').forEach(slider=>{
+  const track=slider.querySelector('.slider-track');
+  const slides=[...track.querySelectorAll('.gallery-item')];
+  const prev=slider.querySelector('.prev');
+  const next=slider.querySelector('.next');
+  const dotsBox=slider.querySelector('.slider-dots');
 
-  let index = 0;
+  if(!track || slides.length===0) return;
 
-  gallery.classList.add('auto-carousel');
+  let index=0;
+  let timer;
 
-  function getStep(){
-    const firstItem = items[0];
-    const gap = parseFloat(getComputedStyle(gallery).gap) || 18;
-    return firstItem.offsetWidth + gap;
+  function perView(){
+    return window.innerWidth<=768 ? 1 : 2;
   }
 
-  function goNext(){
-    index++;
-    if(index > items.length - 2){
-      index = 0;
-    }
+  function maxIndex(){
+    return Math.max(0, slides.length - perView());
+  }
 
-    gallery.scrollTo({
-      left: index * getStep(),
-      behavior: 'smooth'
+  function step(){
+    const gap=parseFloat(getComputedStyle(track).gap)||18;
+    return slides[0].offsetWidth + gap;
+  }
+
+  function update(){
+    if(index > maxIndex()) index = 0;
+    track.style.transform = `translateX(-${index * step()}px)`;
+
+    if(dotsBox){
+      [...dotsBox.children].forEach(dot=>dot.classList.remove('active'));
+      if(dotsBox.children[index]) dotsBox.children[index].classList.add('active');
+    }
+  }
+
+  if(dotsBox){
+    dotsBox.innerHTML='';
+    slides.forEach((_,i)=>{
+      const dot=document.createElement('button');
+      if(i===0) dot.classList.add('active');
+      dot.addEventListener('click',()=>{
+        index=Math.min(i,maxIndex());
+        update();
+        restart();
+      });
+      dotsBox.appendChild(dot);
     });
   }
 
-  setInterval(goNext, 5000);
+  function nextSlide(){
+    index = index >= maxIndex() ? 0 : index + 1;
+    update();
+  }
+
+  function prevSlide(){
+    index = index <= 0 ? maxIndex() : index - 1;
+    update();
+  }
+
+  function restart(){
+    clearInterval(timer);
+    timer=setInterval(nextSlide,5000);
+  }
+
+  if(next){
+    next.addEventListener('click',()=>{
+      nextSlide();
+      restart();
+    });
+  }
+
+  if(prev){
+    prev.addEventListener('click',()=>{
+      prevSlide();
+      restart();
+    });
+  }
+
+  window.addEventListener('resize',update);
+
+  update();
+  restart();
 });
