@@ -158,3 +158,6 @@
     min-height:240px;
   }
 }
+.proof-gallery-wrap .gallery-item{
+  transition:opacity .35s ease, transform .35s ease;
+}
