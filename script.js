@@ -14,14 +14,3 @@ showMoreButtons.forEach(btn=>btn.addEventListener('click',()=>{
   btn.textContent=expanded?'Thu gọn hình ảnh':btn.dataset.originalText;
   if(!expanded) group.scrollIntoView({behavior:'smooth',block:'start'});
 }));
-// Auto slide gallery
-const galleryTabs = document.querySelectorAll('.tab-btn');
-let currentTab = 0;
-
-setInterval(() => {
-    galleryTabs[currentTab].classList.remove('active');
-
-    currentTab = (currentTab + 1) % galleryTabs.length;
-
-    galleryTabs[currentTab].click();
-}, 4000);
