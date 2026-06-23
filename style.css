@@ -132,3 +132,69 @@
     min-height:500px;
   }
 }
+/* Carousel arrows and dots */
+.proof-arrow{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  z-index:8;
+  width:46px;
+  height:46px;
+  border:0;
+  border-radius:50%;
+  background:rgba(255,255,255,.92);
+  color:#071f3f;
+  font-size:36px;
+  line-height:1;
+  cursor:pointer;
+  box-shadow:0 12px 28px rgba(15,23,42,.18);
+}
+
+.proof-prev{
+  left:12px;
+}
+
+.proof-next{
+  right:12px;
+}
+
+.proof-dots{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:18px;
+  display:flex;
+  justify-content:center;
+  gap:8px;
+  z-index:9;
+}
+
+.proof-dots button{
+  width:11px;
+  height:11px;
+  border:0;
+  border-radius:50%;
+  background:rgba(255,255,255,.65);
+  cursor:pointer;
+}
+
+.proof-dots button.active{
+  background:#fff;
+  transform:scale(1.18);
+}
+
+@media(max-width:768px){
+  .proof-arrow{
+    width:40px;
+    height:40px;
+    font-size:32px;
+  }
+
+  .proof-prev{
+    left:8px;
+  }
+
+  .proof-next{
+    right:8px;
+  }
+}
